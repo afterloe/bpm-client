@@ -6,8 +6,16 @@ import org.apache.http.HttpStatus;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
+/**
+ * create by afterloe on 2017/10/17
+ */
 public interface Tools extends Serializable {
+
+    default String getUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
 
     /**
      * 参数检测

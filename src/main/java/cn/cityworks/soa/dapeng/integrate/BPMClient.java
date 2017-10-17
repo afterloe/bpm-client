@@ -5,6 +5,7 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -19,4 +20,13 @@ public interface BPMClient {
      */
     @RequestMapping(value = "/v1/form/{processId}", method = RequestMethod.GET)
     Map getStartFormData(@PathVariable(value = "processId") String processId);
+
+    /**
+     * 启动流程
+     *
+     * @param startFormData
+     * @return
+     */
+    @RequestMapping(value = "/v1/runtime", method = RequestMethod.POST)
+    Map startProcess(@RequestParam Map startFormData);
 }
