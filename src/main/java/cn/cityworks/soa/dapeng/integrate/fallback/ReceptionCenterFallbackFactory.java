@@ -22,7 +22,7 @@ public class ReceptionCenterFallbackFactory implements FallbackFactory<Reception
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceptionCenterFallbackFactory.class);
 
     // 获取 断路器所用的 资源id
-    @Value("${sso.userManager.id:user-center}")
+    @Value("${integrate.userManager:reception-center}")
     private String RESOURCE_ID;
     private ReceptionCenterClient receptionCenterClient;
 

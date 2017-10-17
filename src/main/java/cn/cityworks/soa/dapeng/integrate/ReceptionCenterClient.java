@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * create by afterloe on 2017/9/1
  */
-@FeignClient(name = "${sso.userManager.id:reception-center}", fallbackFactory = ReceptionCenterFallbackFactory.class)
+@FeignClient(name = "${integrate.userManager:reception-center}", fallbackFactory = ReceptionCenterFallbackFactory.class)
 public interface ReceptionCenterClient {
 
     @RequestMapping(value = "/member/who", method = RequestMethod.GET)

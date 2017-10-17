@@ -21,7 +21,7 @@ public class UserClientFallbackFactory implements FallbackFactory<UserClient>, S
     private static final Logger LOGGER = LoggerFactory.getLogger(UserClientFallbackFactory.class);
 
     // 获取 断路器所用的 资源id
-    @Value("${summary.user:user-maneger}")
+    @Value("${integrate.user:user-maneger}")
     private String RESOURCE_ID;
     private UserClient fallback;
 

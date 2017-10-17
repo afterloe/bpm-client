@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
-@FeignClient(name = "${summary.user:user-maneger}", fallbackFactory = UserClientFallbackFactory.class)
+@FeignClient(name = "${integrate.user:user-maneger}", fallbackFactory = UserClientFallbackFactory.class)
 public interface UserClient {
 
     /**

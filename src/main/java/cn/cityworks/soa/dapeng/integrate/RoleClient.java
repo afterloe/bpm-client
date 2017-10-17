@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Map;
 
-@FeignClient(name = "${summary.role:role-store}", fallbackFactory = RoleClientFallbackFactory.class)
+@FeignClient(name = "${integrate.role:role-store}", fallbackFactory = RoleClientFallbackFactory.class)
 public interface RoleClient {
 
     @RequestMapping(value = "/roles", method = RequestMethod.GET)

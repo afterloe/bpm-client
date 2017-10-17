@@ -1,6 +1,7 @@
 package cn.cityworks.soa.dapeng.integrate.fallback;
 
-import cn.cityworks.soa.dapeng.integrate.RoleClient;
+import cn.cityworks.soa.dapeng.integrate.BPMClient;
+import cn.cityworks.soa.dapeng.integrate.UserClient;
 import feign.hystrix.FallbackFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
@@ -13,24 +14,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * create by afterloe on 2017/9/20
+ * create by afterloe on 2017/10/17
  */
 @Component
-public class RoleClientFallbackFactory implements FallbackFactory<RoleClient>, Serializable {
+public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Serializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoleClientFallbackFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BPMClientFallbackFactory.class);
 
     // 获取 断路器所用的 资源id
-    @Value("${integrate.role:role-store}")
+    @Value("${integrate.bpm-engine:bpm-server}")
     private String RESOURCE_ID;
-    private RoleClient fallback;
+    private BPMClient fallback;
 
     // 设置 统一的断路器返回信息
     private Map responseObjectDTO;
 
     @Override
-    public RoleClient create(Throwable cause) {
-        LOGGER.error("RoleClient find {}, by using {}", cause.getMessage(), RESOURCE_ID);
+    public BPMClient create(Throwable cause) {
+        LOGGER.error("BPMClient find {}, by using {}", cause.getMessage(), RESOURCE_ID);
+
         if (null != fallback) {
             return fallback;
         }
@@ -40,14 +42,10 @@ public class RoleClientFallbackFactory implements FallbackFactory<RoleClient>, S
         result.put("totalElements", 0l);
         responseObjectDTO.put("data", result);
         responseObjectDTO.put("code", HttpResponseStatus.BAD_GATEWAY.code());
-        responseObjectDTO.put("msg", "RoleClient is not available");
+        responseObjectDTO.put("msg", "UserClient is not available");
 
-        return fallback = new RoleClient() {
-            @Override
-            public Map roles() {
-                LOGGER.error("roles() invoke fail");
-                return responseObjectDTO;
-            }
+        return fallback = new BPMClient() {
+
         };
     }
 }
