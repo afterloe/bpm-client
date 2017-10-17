@@ -1,0 +1,72 @@
+datasource:
+  # ip: "192.168.0.110"
+  ip: "172.30.128.4"
+  port: 5432
+  name: "centos"
+
+server:
+  port: 8030
+  undertow:
+    direct-buffers: true
+
+spring:
+  application:
+    name: "dapeng-water"
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: jdbc:postgresql://${datasource.ip}:${datasource.port}/${datasource.name}?characterEncoding=UTF-8&useSSL=false
+    type: "com.zaxxer.hikari.HikariDataSource"
+    hikari:
+      max-lifetime: 1830000
+      maximum-pool-size: 18
+    username: "centos"
+    password: "user123"
+  http:
+    multipart:
+      maxFileSize: 20Mb
+      maxRequestSize: 20Mb
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  jackson:
+    serialization:
+      indent_output: true
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+
+feign:
+  hystrix:
+    enabled: true
+info:
+  app:
+    name: ${spring.application.name}
+    version: v0.1
+    time: 2017年9月12日21:55:00
+  describe: "大鹏BPM服务流程"
+  home: /
+  author: afterloe.L
+  licensed: MIT Licensed
+
+developer:
+  name: user
+  password: register
+
+eureka:
+  instance:
+#    ip-address: 172.16.1.10
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    nonSecurePort: ${server.port:8080}
+  client:
+    healthcheck:
+      enable: true
+    serviceUrl:
+      defaultZone: http://${developer.name}:${developer.password}@172.30.192.1:8761/eureka/,http://${developer.name}:${developer.password}@172.30.193.1:8761/eureka/,http://${developer.name}:${developer.password}@172.30.194.1:8761/eureka/
