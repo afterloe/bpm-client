@@ -22,37 +22,21 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
 
     @Value("${bpm.process.id:supervisionIncident:1:4}")
     private String processId;
+    @Value("${bpm.process.formPath:process/form}")
+    private String formPath;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private BPMClient client;
 
-    private StringBuffer getFormData(File file) {
-        BufferedReader bufferedReader = null;
-        StringBuffer stringBuffer = new StringBuffer();
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
-            String line = null;
-            while (null != (line = bufferedReader.readLine())) {
-                stringBuffer.append(line);
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        } finally {
-            if (null != bufferedReader) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return stringBuffer;
-        }
+    @Override
+    public Object setSuperviseMatterFromData(String token, Map taskForm) {
+        checkedParameter(taskForm, "type", "title", "describe");
+        return null;
     }
 
     @Override
-    public Object getSuperviseMatterFromData() {
+    public Object getSuperviseMatterFromData(String token) {
         Map response = client.getStartFormData(processId);
         int code = Integer.valueOf(response.get("code").toString());
         if (200 != code) {
@@ -65,10 +49,10 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         if (Dictionaries.FORM_DATA_TYPE_KEY.equals(type)) {
             try {
                 StringBuffer formBuffer = getFormData(
-                        ResourceUtils.getFile("classpath:processes/" + formData));
-
-                return formBuffer.toString();
-            } catch (FileNotFoundException e) {
+                        ResourceUtils.getFile("classpath:" + formPath
+                                + File.separator + formData));
+                return objectMapper.readValue(formBuffer.toString(), Map.class);
+            } catch (Exception e) {
                 throw BasicException.build("form data can't found -> " + formData, HttpStatus.SC_NOT_FOUND);
             }
         } else if (Dictionaries.FORM_DATA_TYPE_PROPERTY.equals(type)){

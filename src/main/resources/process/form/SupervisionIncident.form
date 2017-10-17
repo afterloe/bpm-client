@@ -1,0 +1,35 @@
+[
+  {
+    "id": "type",
+    "name": "督办类型",
+    "dataType": "select",
+    "value": null,
+    "readable": "true",
+    "writeable": "true",
+    "required": "true",
+    "options": [
+       {"name": "水体整治", "value": "water-remediation"},
+       {"name": "黑臭问题", "value": "black-problem"},
+       {"name": "游客事件", "value": "tourist-events"},
+       {"name": "特殊上报", "value": "special-report"}
+    ]
+  },
+  {
+    "id": "title",
+    "name": "事件标题",
+    "dataType": "text",
+    "value": null,
+    "readable": "true",
+    "writeable": "true",
+    "required": "true"
+  },
+  {
+    "id": "describe",
+    "name": "事件描述",
+    "dataType": "textarea",
+    "value": null,
+    "readable": "true",
+    "writeable": "true",
+    "required": "true"
+  }
+]
