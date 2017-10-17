@@ -46,6 +46,11 @@ public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Ser
 
         return fallback = new BPMClient() {
 
+            @Override
+            public Map getStartFormData(String processId) {
+                LOGGER.error("getStartFormData({}) invoke fail", processId);
+                return null;
+            }
         };
     }
 }
