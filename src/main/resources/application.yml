@@ -2,10 +2,10 @@ datasource:
   # ip: "192.168.0.110"
   ip: "172.30.128.4"
   port: 5432
-  name: "centos"
+  name: "dapeng"
 
 server:
-  port: 8030
+  port: 8080
   undertow:
     direct-buffers: true
 
