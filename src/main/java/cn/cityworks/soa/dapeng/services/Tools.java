@@ -18,13 +18,13 @@ public interface Tools extends Serializable {
      * 快速获取并检测 返回的参数
      *
      */
-    Function<Map, Map> checkedResponseMap = responseMap -> {
+    Function<Map, Object> checkedResponseMap = responseMap -> {
         int code = Integer.valueOf(responseMap.get("code").toString());
         if (HttpStatus.SC_OK != code) {
             throw BasicException.build(responseMap.get("msg").toString(), code);
         }
 
-        return (Map)responseMap.get("data");
+        return responseMap.get("data");
     };
 
     default String getUUID() {

@@ -71,7 +71,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         variables.put("starter", uid);
         variables.put("processDefinitionKey", processDefinitionKey);
         variables.put("businessKey", fromId);
-        return checkedResponseMap.apply(client.startProcess(variables));
+        return (Map) checkedResponseMap.apply(client.startProcess(variables));
     }
 
     /**
@@ -157,7 +157,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
 
     @Override
     public Object getSuperviseMatterFromData(String token) {
-        Map data = checkedResponseMap.apply(client.getStartFormData(processId));
+        Map data = (Map) checkedResponseMap.apply(client.getStartFormData(processId));
         Object type = data.get("type");
         String formData = data.get("formData").toString();
 
