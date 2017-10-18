@@ -39,6 +39,7 @@ public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Ser
         responseObjectDTO = new HashMap();
         Map result = new HashMap();
         result.put("totalElements", 0l);
+
         responseObjectDTO.put("data", result);
         responseObjectDTO.put("code", HttpStatus.SC_BAD_GATEWAY);
         responseObjectDTO.put("msg", "BPMClient is not available");
@@ -66,6 +67,12 @@ public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Ser
             @Override
             public Map countByCanSignTask(String userId) {
                 LOGGER.error("countByCanSignTask({}) invoke fail", userId);
+                return null;
+            }
+
+            @Override
+            public Map listCanSignTaskByGroup(String groupId, int page, int number) {
+                LOGGER.error("listCanSignTaskByGroup({}, {}, {}) invoke fail", groupId, page, number);
                 return null;
             }
         };
