@@ -19,4 +19,12 @@ public interface TaskService extends Serializable, Tools {
      * @return
      */
     Object countByCanSignTask(String token);
+
+    /**
+     * 按组获取可接的任务列表
+     *
+     * @param groupId
+     * @return
+     */
+    Object listCanSignTaskByGroup(String token, String groupId, int page, int number);
 }

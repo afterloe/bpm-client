@@ -39,7 +39,7 @@ public interface BPMClient {
      * @return
      */
     @RequestMapping(value = "/v1/task/list/{userId}", method = RequestMethod.GET)
-    Map listTaskByUserId(@PathVariable(value = "userId", required = false) String userId
+    Map listTaskByUserId(@PathVariable(value = "userId") String userId
             , @RequestParam(value = "page", required = false, defaultValue = "0") int page
             , @RequestParam(value = "number", required = false, defaultValue = "50") int number);
 
@@ -50,5 +50,18 @@ public interface BPMClient {
      * @return
      */
     @RequestMapping(value = "/v1/task/count/{userId}", method = RequestMethod.GET)
-    Map countByCanSignTask(@PathVariable(value = "userId", required = false) String userId);
+    Map countByCanSignTask(@PathVariable(value = "userId") String userId);
+
+    /**
+     * 获取指定组的可签收任务列表
+     *
+     * @param groupId
+     * @param page
+     * @param number
+     * @return
+     */
+    @RequestMapping(value = "/v1/task/group/{groupId}/list", method = RequestMethod.GET)
+    Map listCanSignTaskByGroup(@PathVariable(value = "groupId") String groupId
+            , @RequestParam(value = "page", required = false, defaultValue = "0") int page
+            , @RequestParam(value = "number", required = false, defaultValue = "50") int number);
 }

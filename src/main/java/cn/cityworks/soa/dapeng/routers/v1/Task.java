@@ -42,4 +42,20 @@ public class Task implements Serializable {
         Object data = taskService.countByCanSignTask(access_token);
         return ResponseDTO.build(data);
     }
+
+    /**
+     * 按照组获取任务列表
+     *
+     * @param access_token
+     * @param groupId
+     * @return
+     */
+    @RequestMapping(value = "canSign/group", method = RequestMethod.GET)
+    public ResponseDTO listCanSignTaskByGroups(@RequestHeader("access-token") String access_token
+            , @RequestParam(value = "groupId", required = false) String groupId
+            , @RequestParam(value = "page", required = false, defaultValue = "0") int page
+            , @RequestParam(value = "number", required = false, defaultValue = "50") int number) {
+        Object data = taskService.listCanSignTaskByGroup(access_token, groupId, page, number);
+        return ResponseDTO.build(data);
+    }
 }
