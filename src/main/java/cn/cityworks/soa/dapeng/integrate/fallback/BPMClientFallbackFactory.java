@@ -1,9 +1,8 @@
 package cn.cityworks.soa.dapeng.integrate.fallback;
 
 import cn.cityworks.soa.dapeng.integrate.BPMClient;
-import cn.cityworks.soa.dapeng.integrate.UserClient;
 import feign.hystrix.FallbackFactory;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,8 +40,8 @@ public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Ser
         Map result = new HashMap();
         result.put("totalElements", 0l);
         responseObjectDTO.put("data", result);
-        responseObjectDTO.put("code", HttpResponseStatus.BAD_GATEWAY.code());
-        responseObjectDTO.put("msg", "UserClient is not available");
+        responseObjectDTO.put("code", HttpStatus.SC_BAD_GATEWAY);
+        responseObjectDTO.put("msg", "BPMClient is not available");
 
         return fallback = new BPMClient() {
 
@@ -56,6 +55,18 @@ public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Ser
             public Map startProcess(Map startFormData) {
                 LOGGER.error("startProcess({}) invoke fail", startFormData);
                 return responseObjectDTO;
+            }
+
+            @Override
+            public Map listTaskByUserId(String userId, int page, int number) {
+                LOGGER.error("listTaskByUserId({}, {}, {}) invoke fail", userId, page, number);
+                return null;
+            }
+
+            @Override
+            public Map countByCanSignTask(String userId) {
+                LOGGER.error("countByCanSignTask({}) invoke fail", userId);
+                return null;
             }
         };
     }

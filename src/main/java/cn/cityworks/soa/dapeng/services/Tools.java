@@ -7,11 +7,25 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * create by afterloe on 2017/10/17
  */
 public interface Tools extends Serializable {
+
+    /**
+     * 快速获取并检测 返回的参数
+     *
+     */
+    Function<Map, Map> checkedResponseMap = responseMap -> {
+        int code = Integer.valueOf(responseMap.get("code").toString());
+        if (HttpStatus.SC_OK != code) {
+            throw BasicException.build(responseMap.get("msg").toString(), code);
+        }
+
+        return (Map)responseMap.get("data");
+    };
 
     default String getUUID() {
         return UUID.randomUUID().toString().replace("-", "");

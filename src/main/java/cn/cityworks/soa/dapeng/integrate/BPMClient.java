@@ -29,4 +29,26 @@ public interface BPMClient {
      */
     @RequestMapping(value = "/v1/runtime", method = RequestMethod.POST)
     Map startProcess(@RequestParam Map startFormData);
+
+    /**
+     * 获取指定人的任务列表
+     *
+     * @param userId
+     * @param page
+     * @param number
+     * @return
+     */
+    @RequestMapping(value = "/v1/task/list/{userId}", method = RequestMethod.GET)
+    Map listTaskByUserId(@PathVariable(value = "userId", required = false) String userId
+            , @RequestParam(value = "page", required = false, defaultValue = "0") int page
+            , @RequestParam(value = "number", required = false, defaultValue = "50") int number);
+
+    /**
+     * 获取指定人的可签收的任务数量
+     *
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/v1/task/count/{userId}", method = RequestMethod.GET)
+    Map countByCanSignTask(@PathVariable(value = "userId", required = false) String userId);
 }
