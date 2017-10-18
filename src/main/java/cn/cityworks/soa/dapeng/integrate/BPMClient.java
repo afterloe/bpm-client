@@ -16,6 +16,16 @@ import java.util.Map;
 public interface BPMClient {
 
     /**
+     * 推动流程
+     *
+     * @param uid
+     * @param processId
+     * @return
+     */
+    @RequestMapping(value = "/v1/task/promote/{processId}", method = RequestMethod.PUT)
+    Map submitProcess(@PathVariable(value = "processId") String processId, @RequestParam(value = "uid") String uid);
+
+    /**
      * 获取流程启动表单
      */
     @RequestMapping(value = "/v1/form/{processId}", method = RequestMethod.GET)

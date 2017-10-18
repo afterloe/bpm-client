@@ -55,7 +55,9 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
             throw BasicException.build("no such this superviseMatter! -> " + superviseMatterId
                     , HttpStatus.SC_NOT_FOUND);
         }
-        
+        Map data = (Map) checkedResponseMap.apply(
+                client.submitProcess(formDataDO.getProcessId(), user.getId())); // 推动流程
+
         return null;
     }
 
