@@ -46,6 +46,20 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     private FormDataRepository formDataRepository;
 
     @Override
+    public Object confirm(String token, Map variables) {
+        UserVO user = getUser(token); // 获取用户信息
+        checkedParameter(variables, "superviseMatterId"); // 检测参数
+        String superviseMatterId = variables.get("superviseMatterId").toString();
+        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        if (null == formDataDO) {
+            throw BasicException.build("no such this superviseMatter! -> " + superviseMatterId
+                    , HttpStatus.SC_NOT_FOUND);
+        }
+        
+        return null;
+    }
+
+    @Override
     public Object getSuperviseMatter(String token, String superviseMatterId) {
         UserVO user = getUser(token); // 获取用户信息
         FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
