@@ -80,10 +80,17 @@ public class SuperviseMatter implements Serializable {
         return ResponseDTO.build(data);
     }
 
-    /*
-       @RequestMapping(value = {"confirm"}, method = RequestMethod.PUT)
-    public ResponseDTO confirmSuperviseMatter(@RequestHeader("access-token") String access_token) {
-
-    }
+    /**
+     * 确认督办事项
+     *
+     * @param access_token
+     * @param variables
+     * @return
      */
+    @RequestMapping(value = {"confirm"}, method = RequestMethod.PUT)
+    public ResponseDTO confirmSuperviseMatter(@RequestHeader("access-token") String access_token
+            , @RequestParam Map<String, String> variables) {
+        Object data = superviseMatterService.confirm(access_token, variables);
+        return ResponseDTO.build(data);
+    }
 }
