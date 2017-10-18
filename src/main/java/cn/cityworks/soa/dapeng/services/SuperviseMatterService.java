@@ -22,7 +22,7 @@ public interface SuperviseMatterService extends Serializable, Tools {
      * @param taskForm
      * @return
      */
-    Object setSuperviseMatterFromData(String token, Map taskForm);
+    Object saveSuperviseMatterFromData(String token, Map taskForm);
 
     /**
      * 读取文件信息

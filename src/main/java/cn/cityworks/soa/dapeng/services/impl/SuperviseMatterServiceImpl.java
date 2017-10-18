@@ -4,12 +4,11 @@ import cn.cityworks.soa.dapeng.config.Dictionaries;
 import cn.cityworks.soa.dapeng.dao.FileSystemRepository;
 import cn.cityworks.soa.dapeng.domain.ResponseDTO;
 import cn.cityworks.soa.dapeng.domain.UserVO;
-import cn.cityworks.soa.dapeng.domain.superviseMatter.FromDataDO;
+import cn.cityworks.soa.dapeng.domain.superviseMatter.FormDataDO;
 import cn.cityworks.soa.dapeng.exceptions.BasicException;
 import cn.cityworks.soa.dapeng.integrate.BPMClient;
 import cn.cityworks.soa.dapeng.integrate.ReceptionCenterClient;
 import cn.cityworks.soa.dapeng.services.SuperviseMatterService;
-import cn.cityworks.soa.dapeng.services.Tools;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     @Value("${bpm.process.id:supervisionIncident:1:4}")
     private String processId;
     @Value("${bpm.process.key:supervisionIncident}")
-    private String key;
+    private String processDefinitionKey;
     @Value("${bpm.process.formPath:process/form}")
     private String formPath;
     @Autowired
@@ -43,18 +43,31 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     @Autowired
     private FileSystemRepository fileSystemRepository;
 
-    @Override
-    public Object setSuperviseMatterFromData(String token, Map taskForm) {
+    /**
+     * 获取用户信息
+     *
+     * @param token
+     * @return
+     */
+    private UserVO getUser(String token) {
         ResponseDTO<UserVO> response = receptionCenterClient.who(token);
         if (200 != response.getCode()) {
             throw BasicException.build(response.getMsg(), response.getCode());
         }
-        checkedParameter(taskForm, "type", "title", "describe");
-        String fromId = getUUID(), uid = response.getData().getId();
+        return response.getData();
+    }
 
+    /**
+     * 启动流程
+     *
+     * @param uid
+     * @param fromId
+     * @return
+     */
+    private Map startProcess(String uid, String fromId) {
         Map variables = new LinkedHashMap();
         variables.put("starter", uid);
-        variables.put("processDefinitionKey", key);
+        variables.put("processDefinitionKey", processDefinitionKey);
         variables.put("businessKey", fromId);
 
         Map processResponse = client.startProcess(variables);
@@ -62,28 +75,65 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         if (200 != code) {
             throw BasicException.build(processResponse.get("msg").toString(), code);
         }
-        Map processObject = (Map) processResponse.get("data");
 
+        return (Map) processResponse.get("data");
+    }
+
+    /**
+     * 保存FromData进入数据库
+     *
+     * @param taskForm
+     * @param processId
+     * @param uid
+     * @param fromId
+     * @return
+     */
+    private FormDataDO saveSuperviseMatterFromData(Map taskForm, String processId, String uid, String fromId) {
         long toDate = new Date().getTime();
-        FromDataDO formData = new FromDataDO();
+
+        FormDataDO formData = new FormDataDO();
         formData.setUid(uid);
         formData.setProcessId(fromId);
         formData.setComplete(false);
         formData.setDescribe(taskForm.get("describe").toString());
         formData.setEnable(false);
         formData.setModifyTime(toDate);
-        formData.getProcessId();
+        formData.setProcessId(processId); // 设置启动后的流程id
         formData.setCreateTime(toDate);
         formData.setTitle(taskForm.get("title").toString());
         formData.setType(taskForm.get("type").toString());
 
         fileSystemRepository.save(formData);
 
-        variables.clear();
+        return formData;
+    }
+
+    /*
+     *  保存 督办事项 N-S 流程说明
+     *
+     *  1. 通过token 调用远程服务获取用户信息 [可以在该方法内进行鉴权相关代码]
+     *  2. 检测参数，从routers获取的参数，确保流程能够正常启动
+     *  3. 生成FromDataId，并获取启动流程所需的参数
+     *  4. 启动流程
+     *  5. 获取流程启动后的参数，并继续组装FormData数据
+     *  6. 保存FormData数据进入数据
+     *  7. 整理返回数据s
+     */
+    @Override
+    public Object saveSuperviseMatterFromData(String token, Map taskForm) {
+        UserVO user = getUser(token); // 获取用户信息
+        checkedParameter(taskForm, "type", "title", "describe"); // 检测参数
+        String formId = getUUID(), uid = user.getId(); // 生成FormData 相关参数
+        Map processObject = startProcess(uid, formId); // 启动流程
+        FormDataDO formData = saveSuperviseMatterFromData(taskForm,
+                processObject.get("processId").toString(), uid, formId); // 保存进入数据库
+
+        // 整理返回数据
+        Map variables = new LinkedHashMap();
         variables.put("fromInfo", formData);
         variables.put("processInfo", processObject);
 
-        return null;
+        return variables;
     }
 
     @Override

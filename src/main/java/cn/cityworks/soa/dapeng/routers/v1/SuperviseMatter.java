@@ -40,7 +40,7 @@ public class SuperviseMatter implements Serializable {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseDTO setSuperviseMatterFromData(@RequestParam Map<String, String> taskForm
             , @RequestHeader("access-token") String access_token) {
-        Object data = superviseMatterService.setSuperviseMatterFromData(access_token, taskForm);
+        Object data = superviseMatterService.saveSuperviseMatterFromData(access_token, taskForm);
         return ResponseDTO.build(data);
     }
 }

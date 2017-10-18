@@ -9,8 +9,8 @@ import java.io.Serializable;
 /**
  * create by afterloe on 2017/10/17
  */
-@Entity(name = "fromData")
-public class FromDataDO implements Serializable {
+@Entity(name = "formData")
+public class FormDataDO implements Serializable {
 
     @Id
     private String id;
