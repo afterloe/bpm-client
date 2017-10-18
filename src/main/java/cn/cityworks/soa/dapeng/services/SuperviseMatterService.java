@@ -9,6 +9,15 @@ import java.util.Map;
 public interface SuperviseMatterService extends Serializable, Tools {
 
     /**
+     * 获取督办事项详情
+     *
+     * @param token
+     * @param superviseMatterId
+     * @return
+     */
+    Object getSuperviseMatter(String token, String superviseMatterId);
+
+    /**
      * 督办事项列表
      *
      * @param token

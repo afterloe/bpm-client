@@ -45,6 +45,13 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     @Autowired
     private FormDataRepository formDataRepository;
 
+    @Override
+    public Object getSuperviseMatter(String token, String superviseMatterId) {
+        UserVO user = getUser(token); // 获取用户信息
+        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        return formDataDO;
+    }
+
     /**
      * 获取用户信息
      *
