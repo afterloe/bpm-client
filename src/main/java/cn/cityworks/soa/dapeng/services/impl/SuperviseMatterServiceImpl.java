@@ -1,7 +1,7 @@
 package cn.cityworks.soa.dapeng.services.impl;
 
 import cn.cityworks.soa.dapeng.config.Dictionaries;
-import cn.cityworks.soa.dapeng.dao.FileSystemRepository;
+import cn.cityworks.soa.dapeng.dao.FormDataRepository;
 import cn.cityworks.soa.dapeng.domain.ResponseDTO;
 import cn.cityworks.soa.dapeng.domain.UserVO;
 import cn.cityworks.soa.dapeng.domain.superviseMatter.FormDataDO;
@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -41,7 +43,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     @Autowired
     private ReceptionCenterClient receptionCenterClient;
     @Autowired
-    private FileSystemRepository fileSystemRepository;
+    private FormDataRepository formDataRepository;
 
     /**
      * 获取用户信息
@@ -103,15 +105,39 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         formData.setTitle(taskForm.get("title").toString());
         formData.setType(taskForm.get("type").toString());
 
-        fileSystemRepository.save(formData);
+        formDataRepository.save(formData);
 
         return formData;
+    }
+
+    @Override
+    public Object listSuperviseMatter(String token, String action, Boolean value, int page, int number) {
+        UserVO user = getUser(token); // 获取用户信息
+        Object response;
+        Pageable pageable = new PageRequest(page, number);
+        switch (action) {
+            case "complete":
+                response = formDataRepository.findByComplete(value, pageable);
+                break;
+            case "assign":
+                response = formDataRepository.findByAssign(value, pageable);
+                break;
+            case "enable":
+                response = formDataRepository.findByEnable(value, pageable);
+                break;
+            case "activity":
+                response = formDataRepository.findByActivity(value, pageable);
+                break;
+            default:
+                response = formDataRepository.findByEnable(value, pageable);
+        }
+        return response;
     }
 
     /*
      *  保存 督办事项 N-S 流程说明
      *
-     *  1. 通过token 调用远程服务获取用户信息 [可以在该方法内进行鉴权相关代码]
+     *  1. 通过token 调用远程服务获取用户信息 [可以在1 ~ 2 步骤后加入鉴权相关代码]
      *  2. 检测参数，从routers获取的参数，确保流程能够正常启动
      *  3. 生成FromDataId，并获取启动流程所需的参数
      *  4. 启动流程
@@ -120,7 +146,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
      *  7. 整理返回数据s
      */
     @Override
-    public Object saveSuperviseMatterFromData(String token, Map taskForm) {
+    public Object saveSuperviseMatter(String token, Map taskForm) {
         UserVO user = getUser(token); // 获取用户信息
         checkedParameter(taskForm, "type", "title", "describe"); // 检测参数
         String formId = getUUID(), uid = user.getId(); // 生成FormData 相关参数

@@ -38,9 +38,27 @@ public class SuperviseMatter implements Serializable {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseDTO setSuperviseMatterFromData(@RequestParam Map<String, String> taskForm
+    public ResponseDTO saveSuperviseMatter(@RequestParam Map<String, String> taskForm
             , @RequestHeader("access-token") String access_token) {
-        Object data = superviseMatterService.saveSuperviseMatterFromData(access_token, taskForm);
+        Object data = superviseMatterService.saveSuperviseMatter(access_token, taskForm);
+        return ResponseDTO.build(data);
+    }
+
+    /**
+     * 获取督办事项列表
+     *
+     * @param access_token
+     * @param page
+     * @param number
+     * @return
+     */
+    @RequestMapping(value = {"list"}, method = RequestMethod.GET)
+    public ResponseDTO listSuperviseMatter(@RequestHeader("access-token") String access_token
+            , @RequestParam(value = "action", required = false, defaultValue = "enable") String action
+            , @RequestParam(value = "value", required = false, defaultValue = "true") Boolean value
+            , @RequestParam(value = "page", required = false, defaultValue = "0") int page
+            , @RequestParam(value = "number", required = false, defaultValue = "50") int number) {
+        Object data = superviseMatterService.listSuperviseMatter(access_token, action, value, page, number);
         return ResponseDTO.build(data);
     }
 }

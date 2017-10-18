@@ -9,8 +9,19 @@ import java.util.Map;
 public interface SuperviseMatterService extends Serializable, Tools {
 
     /**
+     * 督办事项列表
+     *
+     * @param token
+     * @param page
+     * @param number
+     * @return
+     */
+    Object listSuperviseMatter(String token, String action, Boolean value, int page, int number);
+
+    /**
      * 获取督办事件 表单
      *
+     * @param token
      * @return
      */
     Object getSuperviseMatterFromData(String token);
@@ -22,7 +33,7 @@ public interface SuperviseMatterService extends Serializable, Tools {
      * @param taskForm
      * @return
      */
-    Object saveSuperviseMatterFromData(String token, Map taskForm);
+    Object saveSuperviseMatter(String token, Map taskForm);
 
     /**
      * 读取文件信息

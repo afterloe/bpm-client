@@ -19,7 +19,9 @@ public class FormDataDO implements Serializable {
     private String describe;
     private String uid;
     private String processId;
-    private boolean isComplete;
+    private Boolean complete;
+    private Boolean assign;
+    private Boolean activity;
     private Long createTime;
     private Long modifyTime;
     private Boolean enable;
@@ -68,12 +70,28 @@ public class FormDataDO implements Serializable {
         this.processId = processId;
     }
 
-    public boolean isComplete() {
-        return isComplete;
+    public Boolean getComplete() {
+        return complete;
     }
 
-    public void setComplete(boolean complete) {
-        isComplete = complete;
+    public void setComplete(Boolean complete) {
+        this.complete = complete;
+    }
+
+    public Boolean getAssign() {
+        return assign;
+    }
+
+    public void setAssign(Boolean assign) {
+        this.assign = assign;
+    }
+
+    public Boolean getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Boolean activity) {
+        this.activity = activity;
     }
 
     public String getId() {
