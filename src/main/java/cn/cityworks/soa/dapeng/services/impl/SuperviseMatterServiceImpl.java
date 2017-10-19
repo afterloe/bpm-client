@@ -46,6 +46,33 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     private FormDataRepository formDataRepository;
 
     @Override
+    public Object choiceFeedbackMode(String superviseMatterId, Integer feedbackMode, String token) {
+        UserVO user = getUser(token); // 获取用户信息
+        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        if (!formDataDO.getNeedReply()) {
+            throw BasicException.build("this form is not confirm or form has choice.", HttpStatus.SC_BAD_REQUEST);
+        }
+        checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
+        Map variables = new LinkedHashMap();
+        if (1 == feedbackMode) {
+            // 下级河长与成员单位进行回复
+            variables.put("officeReply", "false");
+        } else {
+            // 河长办进行回复
+            variables.put("officeReply", "true");
+        }
+        variables = (Map) checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId()
+                , variables)); // 完成任务
+        String taskId = variables.get("id").toString();
+        formDataDO.setActiveTaskId(taskId);
+        formDataDO.setNeedReply(true); // 设置需要回复
+        formDataDO.setModifyTime(new Date().getTime());
+        formDataRepository.save(formDataDO);
+
+        return true;
+    }
+
+    @Override
     public Object confirm(String token, Map variables) {
         UserVO user = getUser(token); // 获取用户信息
         checkedParameter(variables, "superviseMatterId"); // 检测参数
@@ -61,6 +88,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
                 , variables)); // 完成任务
         String taskId = variables.get("id").toString();
         formDataDO.setActiveTaskId(taskId);
+        formDataDO.setActivity(true); // 设置督办为true
         formDataDO.setModifyTime(new Date().getTime());
         formDataRepository.save(formDataDO);
         return null;
@@ -118,14 +146,13 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         formData.setProcessId(fromId);
         formData.setComplete(false);
         formData.setDescribe(taskForm.get("describe").toString());
-        formData.setEnable(false);
+        formData.setEnable(true);
         formData.setModifyTime(toDate);
         formData.setProcessId(processObject.get("processId").toString()); // 设置启动后的流程id
         formData.setActiveTaskId(processObject.get("activeTaskId").toString()); // 设置启动后的任务id
         formData.setCreateTime(toDate);
         formData.setTitle(taskForm.get("title").toString());
         formData.setType(taskForm.get("type").toString());
-
         formDataRepository.save(formData);
 
         return formData;

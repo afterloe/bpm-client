@@ -73,8 +73,8 @@ public class SuperviseMatter implements Serializable {
      */
     @RequestMapping(value = {"/{superviseMatterId}", "/"}, method = RequestMethod.GET)
     public ResponseDTO getSuperviseMatter(@RequestHeader("access-token") String access_token
-            , @RequestParam(value = "superviseMatterId", required = false) String superviseMatterId
-            , @PathVariable(value = "superviseMatterId", required = false) String superviseMatterId_Path) {
+            , @PathVariable(value = "superviseMatterId", required = false) String superviseMatterId_Path
+            , @RequestParam(value = "superviseMatterId", required = false) String superviseMatterId) {
         Object data = superviseMatterService.getSuperviseMatter(access_token, Optional
                 .ofNullable(superviseMatterId_Path).orElse(superviseMatterId));
         return ResponseDTO.build(data);
@@ -91,6 +91,21 @@ public class SuperviseMatter implements Serializable {
     public ResponseDTO confirmSuperviseMatter(@RequestHeader("access-token") String access_token
             , @RequestParam Map<String, String> variables) {
         Object data = superviseMatterService.confirm(access_token, variables);
+        return ResponseDTO.build(data);
+    }
+
+    /**
+     * 选择反馈方式
+     *
+     * @param access_token
+     * @return
+     */
+    @RequestMapping(value = {"/feedbackMode/{superviseMatterId}"}, method = RequestMethod.PUT)
+    public ResponseDTO choiceFeedbackMode(@RequestHeader("access-token") String access_token
+            , @PathVariable(value = "superviseMatterId", required = false) String superviseMatterId
+            , @RequestParam(value = "action", required = false, defaultValue = "0") Integer action) {
+        Object data = superviseMatterService.choiceFeedbackMode(superviseMatterId,
+                Optional.ofNullable(action).orElse(0), access_token);
         return ResponseDTO.build(data);
     }
 }
