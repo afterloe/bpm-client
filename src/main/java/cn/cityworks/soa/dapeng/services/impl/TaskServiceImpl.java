@@ -10,6 +10,7 @@ import cn.cityworks.soa.dapeng.services.TaskService;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Optional;
 /**
  * create by afterloe on 2017/10/18
  */
+@Service
 public class TaskServiceImpl implements TaskService {
 
     @Autowired

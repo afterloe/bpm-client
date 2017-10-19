@@ -61,7 +61,7 @@ developer:
 
 eureka:
   instance:
-#    ip-address: 172.16.1.10
+    ip-address: 172.16.1.10
     preferIpAddress: true
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
     nonSecurePort: ${server.port:8080}
