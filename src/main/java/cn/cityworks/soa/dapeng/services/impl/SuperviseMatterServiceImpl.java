@@ -181,12 +181,12 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
      * @param fromId
      * @return
      */
-    private FormDataDO saveSuperviseMatterFromData(Map taskForm, Map processObject, String uid, String fromId) {
+    private FormDataDO saveSuperviseMatterFromData(Map taskForm, Map processObject, String uid, String formId) {
         long toDate = new Date().getTime();
 
         FormDataDO formData = new FormDataDO();
+        formData.setId(formId);
         formData.setUid(uid);
-        formData.setProcessId(fromId);
         formData.setComplete(false);
         formData.setDescribe(taskForm.get("describe").toString());
         formData.setEnable(true);
