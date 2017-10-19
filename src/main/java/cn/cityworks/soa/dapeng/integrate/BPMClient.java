@@ -16,14 +16,22 @@ import java.util.Map;
 public interface BPMClient {
 
     /**
-     * 推动流程
+     * 完成任务
      *
-     * @param uid
-     * @param processId
      * @return
      */
-    @RequestMapping(value = "/v1/task/promote/{processId}", method = RequestMethod.PUT)
-    Map submitProcess(@PathVariable(value = "processId") String processId, @RequestParam(value = "uid") String uid);
+    @RequestMapping(value = "/v1/task/complete/{taskId}", method = RequestMethod.PUT)
+    Map completeTask(@PathVariable(value = "taskId") String taskId, @RequestParam Map variables);
+
+    /**
+     * 签收任务
+     *
+     * @param uid
+     * @param taskId
+     * @return
+     */
+    @RequestMapping(value = "/v1/task/claim/{taskId}", method = RequestMethod.PUT)
+    Map claimTask(@PathVariable(value = "taskId") String taskId, @RequestParam(value = "uid") String uid);
 
     /**
      * 获取流程启动表单

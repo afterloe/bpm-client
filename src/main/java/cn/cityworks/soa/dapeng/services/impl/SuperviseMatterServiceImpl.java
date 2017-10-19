@@ -55,9 +55,14 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
             throw BasicException.build("no such this superviseMatter! -> " + superviseMatterId
                     , HttpStatus.SC_NOT_FOUND);
         }
-        Map data = (Map) checkedResponseMap.apply(
-                client.submitProcess(formDataDO.getProcessId(), user.getId())); // 推动流程
-
+        checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
+        variables.clear();
+        variables = (Map) checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId()
+                , variables)); // 完成任务
+        String taskId = variables.get("id").toString();
+        formDataDO.setActiveTaskId(taskId);
+        formDataDO.setModifyTime(new Date().getTime());
+        formDataRepository.save(formDataDO);
         return null;
     }
 
@@ -101,12 +106,11 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
      * 保存FromData进入数据库
      *
      * @param taskForm
-     * @param processId
      * @param uid
      * @param fromId
      * @return
      */
-    private FormDataDO saveSuperviseMatterFromData(Map taskForm, String processId, String uid, String fromId) {
+    private FormDataDO saveSuperviseMatterFromData(Map taskForm, Map processObject, String uid, String fromId) {
         long toDate = new Date().getTime();
 
         FormDataDO formData = new FormDataDO();
@@ -116,7 +120,8 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         formData.setDescribe(taskForm.get("describe").toString());
         formData.setEnable(false);
         formData.setModifyTime(toDate);
-        formData.setProcessId(processId); // 设置启动后的流程id
+        formData.setProcessId(processObject.get("processId").toString()); // 设置启动后的流程id
+        formData.setActiveTaskId(processObject.get("activeTaskId").toString()); // 设置启动后的任务id
         formData.setCreateTime(toDate);
         formData.setTitle(taskForm.get("title").toString());
         formData.setType(taskForm.get("type").toString());
@@ -168,7 +173,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         String formId = getUUID(), uid = user.getId(); // 生成FormData 相关参数
         Map processObject = startProcess(uid, formId); // 启动流程
         FormDataDO formData = saveSuperviseMatterFromData(taskForm,
-                processObject.get("processId").toString(), uid, formId); // 保存进入数据库
+                processObject, uid, formId); // 保存进入数据库
 
         // 整理返回数据
         Map variables = new LinkedHashMap();

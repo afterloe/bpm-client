@@ -19,12 +19,21 @@ public class FormDataDO implements Serializable {
     private String describe;
     private String uid;
     private String processId;
+    private String activeTaskId;
     private Boolean complete;
     private Boolean assign;
     private Boolean activity;
     private Long createTime;
     private Long modifyTime;
     private Boolean enable;
+
+    public String getActiveTaskId() {
+        return activeTaskId;
+    }
+
+    public void setActiveTaskId(String activeTaskId) {
+        this.activeTaskId = activeTaskId;
+    }
 
     public String getType() {
         return type.getName();
