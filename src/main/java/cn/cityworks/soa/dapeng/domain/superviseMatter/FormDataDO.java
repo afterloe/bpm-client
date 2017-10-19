@@ -24,9 +24,18 @@ public class FormDataDO implements Serializable {
     private Boolean assign;
     private Boolean activity;
     private Boolean needReply;
+    private String reply;
     private Long createTime;
     private Long modifyTime;
     private Boolean enable;
+
+    public String getReply() {
+        return reply;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
+    }
 
     public Boolean getNeedReply() {
         return needReply;

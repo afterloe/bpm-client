@@ -46,11 +46,31 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     private FormDataRepository formDataRepository;
 
     @Override
+    public Object replySuperviseMatter(String token, Map variables) {
+        UserVO user = getUser(token); // 获取用户信息
+        checkedParameter(variables, "superviseMatterId", "reply"); // 检测参数
+        String superviseMatterId = variables.get("superviseMatterId").toString();
+        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        if (!formDataDO.getNeedReply()) {
+            throw BasicException.build("this form has not choice feedback mode.", HttpStatus.SC_BAD_REQUEST);
+        }
+        formDataDO.setReply(variables.get("reply").toString()); // 保存回复
+        checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
+        variables = (Map) checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId(), null));
+        String taskId = variables.get("id").toString();
+        formDataDO.setActiveTaskId(taskId);
+        formDataDO.setModifyTime(new Date().getTime());
+        formDataRepository.save(formDataDO);
+
+        return true;
+    }
+
+    @Override
     public Object choiceFeedbackMode(String superviseMatterId, Integer feedbackMode, String token) {
         UserVO user = getUser(token); // 获取用户信息
         FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
         if (!formDataDO.getNeedReply()) {
-            throw BasicException.build("this form is not confirm or form has choice.", HttpStatus.SC_BAD_REQUEST);
+            throw BasicException.build("this form has not confirm.", HttpStatus.SC_BAD_REQUEST);
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
         Map variables = new LinkedHashMap();

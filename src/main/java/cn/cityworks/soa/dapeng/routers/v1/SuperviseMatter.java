@@ -100,12 +100,26 @@ public class SuperviseMatter implements Serializable {
      * @param access_token
      * @return
      */
-    @RequestMapping(value = {"/feedbackMode/{superviseMatterId}"}, method = RequestMethod.PUT)
+    @RequestMapping(value = {"feedbackMode/{superviseMatterId}"}, method = RequestMethod.PUT)
     public ResponseDTO choiceFeedbackMode(@RequestHeader("access-token") String access_token
             , @PathVariable(value = "superviseMatterId", required = false) String superviseMatterId
             , @RequestParam(value = "action", required = false, defaultValue = "0") Integer action) {
         Object data = superviseMatterService.choiceFeedbackMode(superviseMatterId,
                 Optional.ofNullable(action).orElse(0), access_token);
+        return ResponseDTO.build(data);
+    }
+
+    /**
+     * 回复督办事项
+     *
+     * @param access_token
+     * @param variables
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseDTO replySuperviseMatter(@RequestHeader("access-token") String access_token
+            , @RequestParam Map<String, String> variables) {
+        Object data = superviseMatterService.replySuperviseMatter(access_token, variables);
         return ResponseDTO.build(data);
     }
 }
