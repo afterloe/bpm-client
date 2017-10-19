@@ -11,6 +11,8 @@ import cn.cityworks.soa.dapeng.integrate.ReceptionCenterClient;
 import cn.cityworks.soa.dapeng.services.SuperviseMatterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,8 @@ import java.util.Map;
  */
 @Service
 public class SuperviseMatterServiceImpl implements SuperviseMatterService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SuperviseMatterServiceImpl.class);
 
     @Value("${bpm.process.id:supervisionIncident:1:4}")
     private String processId;
@@ -257,10 +261,9 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
 
         if (Dictionaries.FORM_DATA_TYPE_KEY.equals(type)) {
             try {
-                StringBuffer formBuffer = getFormData(
-                        ResourceUtils.getFile("classpath:" + formPath
-                                + File.separator + formData));
-                return objectMapper.readValue(formBuffer.toString(), Map.class);
+                StringBuffer formBuffer = getFormData(ResourceUtils.getFile("classpath:" + formPath
+                        + File.separator + formData));
+                return objectMapper.readValue(formBuffer.toString(), Object.class);
             } catch (Exception e) {
                 throw BasicException.build("form data can't found -> " + formData, HttpStatus.SC_NOT_FOUND);
             }
