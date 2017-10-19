@@ -122,4 +122,18 @@ public class SuperviseMatter implements Serializable {
         Object data = superviseMatterService.replySuperviseMatter(access_token, variables);
         return ResponseDTO.build(data);
     }
+
+    /**
+     * 同意督办回复
+     *
+     * @param access_token
+     * @param superviseMatterId
+     * @return
+     */
+    @RequestMapping(value = "approval/{superviseMatterId}", method = RequestMethod.PUT)
+    public ResponseDTO approvalSuperviseMatter(@RequestHeader("access-token") String access_token
+            , @PathVariable(value = "superviseMatterId", required = false) String superviseMatterId) {
+        Object data = superviseMatterService.approvalSuperviseMatter(access_token, superviseMatterId);
+        return ResponseDTO.build(data);
+    }
 }

@@ -46,6 +46,25 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     private FormDataRepository formDataRepository;
 
     @Override
+    public Object approvalSuperviseMatter(String token, String superviseMatterId) {
+        UserVO user = getUser(token); // 获取用户信息
+        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        if (null != formDataDO.getReply()) {
+            throw BasicException.build("this form reply.", HttpStatus.SC_BAD_REQUEST);
+        }
+        checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
+        Object flag = checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId(), null));
+        if (!Boolean.valueOf(flag.toString()).equals(Boolean.TRUE)) {
+            throw BasicException.build("this form approval failed!");
+        }
+        formDataDO.setComplete(true);
+        formDataDO.setModifyTime(new Date().getTime());
+        formDataRepository.save(formDataDO);
+
+        return true;
+    }
+
+    @Override
     public Object replySuperviseMatter(String token, Map variables) {
         UserVO user = getUser(token); // 获取用户信息
         checkedParameter(variables, "superviseMatterId", "reply"); // 检测参数

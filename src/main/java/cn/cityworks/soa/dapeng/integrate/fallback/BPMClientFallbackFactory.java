@@ -47,8 +47,14 @@ public class BPMClientFallbackFactory implements FallbackFactory<BPMClient>, Ser
         return fallback = new BPMClient() {
 
             @Override
-            public Map submitProcess(String processId, String uid) {
-                LOGGER.error("submitProcess({}, {}) invoke fail", processId, uid);
+            public Map completeTask(String taskId, Map variables) {
+                LOGGER.error("completeTask({}, {}) invoke fail", taskId, variables);
+                return responseObjectDTO;
+            }
+
+            @Override
+            public Map claimTask(String taskId, String uid) {
+                LOGGER.error("claimTask({}, {}) invoke fail", taskId, uid);
                 return responseObjectDTO;
             }
 
