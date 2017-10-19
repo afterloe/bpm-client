@@ -127,6 +127,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
         variables.clear();
+        variables.put("uid", user.getId());
         variables = (Map) checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId()
                 , variables)); // 完成任务
         String taskId = variables.get("id").toString();
