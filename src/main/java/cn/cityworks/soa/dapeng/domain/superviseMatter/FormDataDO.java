@@ -29,6 +29,42 @@ public class FormDataDO implements Serializable {
     private Long modifyTime;
     private Boolean enable;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FormDataDO that = (FormDataDO) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "FormDataDO{" +
+                "id='" + id + '\'' +
+                ", type=" + type +
+                ", title='" + title + '\'' +
+                ", describe='" + describe + '\'' +
+                ", uid='" + uid + '\'' +
+                ", processId='" + processId + '\'' +
+                ", activeTaskId='" + activeTaskId + '\'' +
+                ", complete=" + complete +
+                ", assign=" + assign +
+                ", activity=" + activity +
+                ", needReply=" + needReply +
+                ", reply='" + reply + '\'' +
+                ", createTime=" + createTime +
+                ", modifyTime=" + modifyTime +
+                ", enable=" + enable +
+                '}';
+    }
+
     public String getReply() {
         return reply;
     }

@@ -134,13 +134,13 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         formDataDO.setActivity(true); // 设置督办为true
         formDataDO.setModifyTime(new Date().getTime());
         formDataRepository.save(formDataDO);
-        return null;
+        return true;
     }
 
     @Override
     public Object getSuperviseMatter(String token, String superviseMatterId) {
         UserVO user = getUser(token); // 获取用户信息
-        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        FormDataDO formDataDO = formDataRepository.findOne(superviseMatterId);
         return formDataDO;
     }
 
