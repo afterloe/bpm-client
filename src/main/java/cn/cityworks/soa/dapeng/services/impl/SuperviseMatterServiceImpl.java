@@ -53,11 +53,13 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     public Object approvalSuperviseMatter(String token, String superviseMatterId) {
         UserVO user = getUser(token); // 获取用户信息
         FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
-        if (null != formDataDO.getReply()) {
+        if (null == formDataDO.getReply()) {
             throw BasicException.build("this form reply.", HttpStatus.SC_BAD_REQUEST);
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
-        Object flag = checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId(), null));
+        Map variables = new LinkedHashMap();
+        variables.put("uid", user.getId());
+        Object flag = checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId(), variables));
         if (!Boolean.valueOf(flag.toString()).equals(Boolean.TRUE)) {
             throw BasicException.build("this form approval failed!");
         }
