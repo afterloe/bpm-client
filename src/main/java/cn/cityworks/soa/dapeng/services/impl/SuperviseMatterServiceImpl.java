@@ -74,12 +74,14 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         checkedParameter(variables, "superviseMatterId", "reply"); // 检测参数
         String superviseMatterId = variables.get("superviseMatterId").toString();
         FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
-        if (Boolean.TRUE.equals(formDataDO.getNeedReply())) {
+        if (!Boolean.TRUE.equals(formDataDO.getNeedReply())) {
             throw BasicException.build("this form has not choice feedback mode.", HttpStatus.SC_BAD_REQUEST);
         }
         formDataDO.setReply(variables.get("reply").toString()); // 保存回复
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
-        variables = (Map) checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId(), null));
+        variables.clear();
+        variables.put("uid", user.getId());
+        variables = (Map) checkedResponseMap.apply(client.completeTask(formDataDO.getActiveTaskId(), variables));
         String taskId = variables.get("id").toString();
         formDataDO.setActiveTaskId(taskId);
         formDataDO.setModifyTime(new Date().getTime());
