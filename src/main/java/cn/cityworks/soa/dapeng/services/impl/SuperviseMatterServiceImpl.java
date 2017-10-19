@@ -74,7 +74,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         checkedParameter(variables, "superviseMatterId", "reply"); // 检测参数
         String superviseMatterId = variables.get("superviseMatterId").toString();
         FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
-        if (true == formDataDO.getNeedReply()) {
+        if (Boolean.TRUE.equals(formDataDO.getNeedReply())) {
             throw BasicException.build("this form has not choice feedback mode.", HttpStatus.SC_BAD_REQUEST);
         }
         formDataDO.setReply(variables.get("reply").toString()); // 保存回复
@@ -92,11 +92,12 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     public Object choiceFeedbackMode(String superviseMatterId, Integer feedbackMode, String token) {
         UserVO user = getUser(token); // 获取用户信息
         FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
-        if (true == formDataDO.getNeedReply()) {
-            throw BasicException.build("this form has not confirm.", HttpStatus.SC_BAD_REQUEST);
+        if (Boolean.TRUE.equals(formDataDO.getNeedReply())) {
+            throw BasicException.build("this form has choice confirm.", HttpStatus.SC_BAD_REQUEST);
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
         Map variables = new LinkedHashMap();
+        variables.put("uid", user.getId());
         if (1 == feedbackMode) {
             // 下级河长与成员单位进行回复
             variables.put("officeReply", "false");
@@ -121,7 +122,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         checkedParameter(variables, "superviseMatterId"); // 检测参数
         String superviseMatterId = variables.get("superviseMatterId").toString();
         FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
-        if (true == formDataDO.getActivity()) {
+        if (Boolean.TRUE.equals(formDataDO.getActivity())) {
             throw BasicException.build("this task has confirm. -> " + superviseMatterId, HttpStatus.SC_BAD_REQUEST);
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
