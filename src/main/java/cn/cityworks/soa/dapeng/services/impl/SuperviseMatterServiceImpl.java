@@ -52,7 +52,7 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     @Override
     public Object approvalSuperviseMatter(String token, String superviseMatterId) {
         UserVO user = getUser(token); // 获取用户信息
-        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
         if (null != formDataDO.getReply()) {
             throw BasicException.build("this form reply.", HttpStatus.SC_BAD_REQUEST);
         }
@@ -73,8 +73,8 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         UserVO user = getUser(token); // 获取用户信息
         checkedParameter(variables, "superviseMatterId", "reply"); // 检测参数
         String superviseMatterId = variables.get("superviseMatterId").toString();
-        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
-        if (!formDataDO.getNeedReply()) {
+        FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
+        if (true == formDataDO.getNeedReply()) {
             throw BasicException.build("this form has not choice feedback mode.", HttpStatus.SC_BAD_REQUEST);
         }
         formDataDO.setReply(variables.get("reply").toString()); // 保存回复
@@ -91,8 +91,8 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
     @Override
     public Object choiceFeedbackMode(String superviseMatterId, Integer feedbackMode, String token) {
         UserVO user = getUser(token); // 获取用户信息
-        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
-        if (!formDataDO.getNeedReply()) {
+        FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
+        if (true == formDataDO.getNeedReply()) {
             throw BasicException.build("this form has not confirm.", HttpStatus.SC_BAD_REQUEST);
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
@@ -120,10 +120,9 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
         UserVO user = getUser(token); // 获取用户信息
         checkedParameter(variables, "superviseMatterId"); // 检测参数
         String superviseMatterId = variables.get("superviseMatterId").toString();
-        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
-        if (null == formDataDO) {
-            throw BasicException.build("no such this superviseMatter! -> " + superviseMatterId
-                    , HttpStatus.SC_NOT_FOUND);
+        FormDataDO formDataDO = getSuperviseMatter(superviseMatterId);
+        if (true == formDataDO.getActivity()) {
+            throw BasicException.build("this task has confirm. -> " + superviseMatterId, HttpStatus.SC_BAD_REQUEST);
         }
         checkedResponseMap.apply(client.claimTask(formDataDO.getActiveTaskId(), user.getId())); // 签收任务
         variables.clear();
@@ -157,6 +156,21 @@ public class SuperviseMatterServiceImpl implements SuperviseMatterService {
             throw BasicException.build(response.getMsg(), response.getCode());
         }
         return response.getData();
+    }
+
+    /**
+     * 获取督办事项
+     *
+     * @param superviseMatterId
+     * @return
+     */
+    private FormDataDO getSuperviseMatter(String superviseMatterId) {
+        FormDataDO formDataDO = formDataRepository.getOne(superviseMatterId);
+        if (null == formDataDO) {
+            throw BasicException.build("no such this superviseMatter! -> " + superviseMatterId
+                    , HttpStatus.SC_NOT_FOUND);
+        }
+        return formDataDO;
     }
 
     /**
